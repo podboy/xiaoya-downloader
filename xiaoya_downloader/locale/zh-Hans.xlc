@@ -1,0 +1,17 @@
+language = "zh-Hans"
+
+[resources]
+language = "zh-Hans"
+title = "小雅资源"
+name = "名称"
+size = "大小"
+modified = "修改时间"
+selected_size = "已选文件大小"
+homepage_button = "主页"
+refresh_button = "刷新"
+delete_button = "删除"
+save_button = "保存"
+please_select = "请选择一个文件"
+save_success = "保存成功"
+save_failure = "保存失败"
+save_error = "保存时出错"

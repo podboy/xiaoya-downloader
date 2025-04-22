@@ -1,0 +1,17 @@
+language = "zh-Hant"
+
+[resources]
+language = "zh-Hant"
+title = "小雅資源"
+name = "名稱"
+size = "大小"
+modified = "修改時間"
+selected_size = "已選文件大小"
+homepage_button = "主頁"
+refresh_button = "刷新"
+delete_button = "刪除"
+save_button = "存檔"
+please_select = "請選擇一個文件"
+save_success = "存檔成功"
+save_failure = "存檔失敗"
+save_error = "存檔時出錯"

@@ -1,0 +1,17 @@
+language = "en"
+
+[resources]
+language = "en"
+title = "Resources for xiaoya"
+name = "Name"
+size = "Size"
+modified = "Modified"
+selected_size = "Selected Files Size"
+homepage_button = "Homepage"
+refresh_button = "Refresh"
+delete_button = "Delete"
+save_button = "Save"
+please_select = "Please select at least one file"
+save_success = "Successfully saved"
+save_failure = "Save failed"
+save_error = "An error occurred while saving"

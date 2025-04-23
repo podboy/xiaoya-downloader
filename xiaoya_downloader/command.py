@@ -25,7 +25,7 @@ def add_cmd(_arg: ArgParser):  # pylint: disable=unused-argument
 def run_cmd(cmds: Command) -> int:  # pylint: disable=unused-argument
     base_url: str = getenv("BASE_URL", "https://alist.xiaoya.pro/")
     base_dir: str = getenv("BASE_DIR", "data")
-    host: str = getenv("HOST", "127.0.0.1")
+    host: str = getenv("HOST", "0.0.0.0")
     port: int = int(getenv("PORT", "5000"))
     debug: bool = getenv("DEBUG", "false").lower() == "true"
     run(base_url, base_dir, host, port, debug)

@@ -13,12 +13,30 @@ def send_post_request(url: str, data: Dict):
 
 
 class AListAPI:
+    """AList API
+
+    Reference: https://alist.nn.ci/zh/guide/api/
+    """
+
     class FS:  # pylint:disable=too-few-public-methods
+        """https://alist.nn.ci/zh/guide/api/fs.html"""
+
         def __init__(self, base_url: str):
             self.__base_url = base_url
 
         def list(self, path: str = "/") -> Dict:
             url = urljoin(self.__base_url, "/api/fs/list")
+            data = {
+                "path": path,
+                "password": "",
+                "page": 1,
+                "per_page": 0,
+                "refresh": False
+            }
+            return send_post_request(url, data).json()
+
+        def get(self, path: str = "/") -> Dict:
+            url = urljoin(self.__base_url, "/api/fs/get")
             data = {
                 "path": path,
                 "password": "",

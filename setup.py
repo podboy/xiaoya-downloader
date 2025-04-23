@@ -46,6 +46,9 @@ setup(
                   "Bug Tracker": __urlbugs__,
                   "Documentation": __urldocs__},
     packages=find_packages(include=["xiaoya_downloader*"], exclude=["xiaoya_downloader.unittest"]),  # noqa:E501
+    package_data={"xiaoya_downloader.locale": ["*.xlc"],
+                  "xiaoya_downloader.static": ["*.png"],
+                  "xiaoya_downloader.templates": ["*.html"]},
     install_requires=all_requirements(),
     cmdclass={
         "install": CustomInstallCommand,

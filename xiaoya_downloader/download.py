@@ -7,6 +7,7 @@ from typing import List
 
 from xkits_logger import Logger
 
+from xiaoya_downloader.alist import AListAPI
 from xiaoya_downloader.resources import File
 from xiaoya_downloader.resources import Resources
 
@@ -14,12 +15,17 @@ from xiaoya_downloader.resources import Resources
 class Download():
     CHUNK_SIZE: int = 1048576
 
-    def __init__(self, resources: Resources):
+    def __init__(self, resources: Resources, api: AListAPI):
         self.__resources: Resources = resources
+        self.__api: AListAPI = api
 
     @property
     def resources(self) -> Resources:
         return self.__resources
+
+    @property
+    def api(self) -> AListAPI:
+        return self.__api
 
     def join(self, file: File) -> str:
         return join(self.resources.base_dir, file.path, file.name)
@@ -28,6 +34,7 @@ class Download():
         from requests import get  # pylint:disable=import-outside-toplevel
 
         with get(file.data, stream=True, timeout=180.0) as stream:
+            stream.raise_for_status()  # HTTPError
             with open(path := self.join(file), "wb") as whdl:
                 file.update(-1)
                 self.resources.save()
@@ -35,8 +42,14 @@ class Download():
                 for chunk in stream.iter_content(chunk_size=self.CHUNK_SIZE):
                     if chunk:
                         whdl.write(chunk)
-                file.update(size := whdl.tell())
-                Logger.stdout_green(f"Download {path} size {size} fininshed")
+                size: int = self.api.fs.get(join(file.path, file.name))["data"]["size"]  # noqa:E501
+                if whdl.tell() == size:
+                    Logger.stdout_green(
+                        f"Download {path} size {size} fininshed")
+                    file.update(size)
+                else:
+                    Logger.stderr_red(f"Download {path} size {size} error")
+                    file.update(-size)
                 self.resources.save()
 
     def daemon(self):
@@ -62,5 +75,5 @@ class Download():
                 sleep(3.0)
 
     @classmethod
-    def run(cls, resources: Resources):
-        Thread(target=cls(resources).daemon).start()
+    def run(cls, resources: Resources, api: AListAPI):
+        Thread(target=cls(resources, api).daemon).start()

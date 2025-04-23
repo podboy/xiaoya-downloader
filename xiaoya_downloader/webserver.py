@@ -68,5 +68,5 @@ def run(base_url: str, base_dir: str, host: str = "0.0.0.0", port: int = 5000, d
     locale: LocaleTemplate = LocaleTemplate(dirname(__file__))
     api: AListAPI = AListAPI(base_url)
     app = init(resources, locale, api)
-    Download.run(resources)
+    Download.run(resources, api)
     app.run(host=host, port=port, debug=debug)

@@ -70,7 +70,3 @@ def run(base_url: str, base_dir: str):
     app = init(resources, locale, api)
     Download.run(resources)
     app.run(host="0.0.0.0", port=5000, debug=True)
-
-
-if __name__ == "__main__":
-    run("http://xiaoya.lxc:5678/", "data")

@@ -63,10 +63,10 @@ def init(resources: Resources, locale: LocaleTemplate, api: AListAPI) -> Flask:
     return app
 
 
-def run(base_url: str, base_dir: str):
+def run(base_url: str, base_dir: str, host: str = "0.0.0.0", port: int = 5000, debug: bool = True):  # noqa:E501
     resources: Resources = Resources.load(base_url, base_dir)
     locale: LocaleTemplate = LocaleTemplate(dirname(__file__))
     api: AListAPI = AListAPI(base_url)
     app = init(resources, locale, api)
     Download.run(resources)
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host=host, port=port, debug=debug)

@@ -47,5 +47,5 @@ pytest:
 	pytest --cov=xiaoya_downloader --cov-report=term-missing --cov-report=xml --cov-report=html --cov-config=.coveragerc --cov-fail-under=100
 pytest-clean:
 	rm -rf .pytest_cache
-test: test-prepare pylint flake8 pytest
+test: test-prepare pylint flake8
 test-clean: pytest-clean

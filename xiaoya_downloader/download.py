@@ -53,6 +53,8 @@ class Download():
                 self.resources.save()
 
     def daemon(self):
+        delay: float = 15.0
+
         while True:
             try:
                 todo: List[File] = []
@@ -67,12 +69,14 @@ class Download():
                         self.handle(file)
                     todo.clear()
 
+                delay = max(5.0, delay * 0.9)
             except Exception:  # pylint:disable=broad-exception-caught
                 import traceback  # pylint:disable=import-outside-toplevel
 
                 traceback.print_exc()
+                delay = min(delay * 1.5, 180.0)
             finally:
-                sleep(3.0)
+                sleep(delay)
 
     @classmethod
     def run(cls, resources: Resources, api: AListAPI):

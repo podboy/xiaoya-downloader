@@ -5,6 +5,8 @@ from threading import Thread
 from time import sleep
 from typing import List
 
+from xkits_logger import Logger
+
 from xiaoya_downloader.resources import File
 from xiaoya_downloader.resources import Resources
 
@@ -26,13 +28,15 @@ class Download():
         from requests import get  # pylint:disable=import-outside-toplevel
 
         with get(file.data, stream=True, timeout=180.0) as stream:
-            with open(self.join(file), "wb", encoding="utf-8") as whdl:
+            with open(path := self.join(file), "wb") as whdl:
                 file.update(-1)
                 self.resources.save()
+                Logger.stdout(f"Download {path} started")
                 for chunk in stream.iter_content(chunk_size=self.CHUNK_SIZE):
                     if chunk:
                         whdl.write(chunk)
-                file.update(whdl.tell())
+                file.update(size := whdl.tell())
+                Logger.stdout_green(f"Download {path} size {size} fininshed")
                 self.resources.save()
 
     def daemon(self):

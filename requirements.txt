@@ -1,4 +1,5 @@
 xkits-command>=0.2
+xkits-file>=0.3
 xhtm>=0.11
 requests
 Flask

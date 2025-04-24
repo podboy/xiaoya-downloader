@@ -46,18 +46,10 @@ class Download():
 
         while True:
             try:
-                todo: List[File] = []
-
                 for node in self.resources:
                     for file in node:
                         if file.size <= 0:
-                            todo.append(file)
-
-                if len(todo) > 0:
-                    for file in todo:
-                        self.download(file)
-                    todo.clear()
-
+                            self.download(file)
                 delay = max(5.0, delay * 0.9)
             except Exception:  # pylint:disable=broad-exception-caught
                 import traceback  # pylint:disable=import-outside-toplevel

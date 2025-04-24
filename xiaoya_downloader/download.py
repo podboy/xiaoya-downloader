@@ -3,7 +3,6 @@
 from os.path import join
 from threading import Thread
 from time import sleep
-from typing import List
 
 from alist_kits import FS
 from xkits_file import Downloader

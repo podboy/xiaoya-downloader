@@ -1,4 +1,4 @@
-name: Release
+name: release
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  PyPI:
+  pypi:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -23,7 +23,7 @@ jobs:
         run: |
           xpip-upload --token ${{ secrets.PYPI_TOKEN }} dist/*
 
-  Docker:
+  docker:
     needs: PyPI
     runs-on: ubuntu-latest
     steps:

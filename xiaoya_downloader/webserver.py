@@ -8,41 +8,45 @@ from typing import Dict
 from typing import List
 from urllib.parse import urljoin
 
+from alist_kits import FS
 from flask import Flask
 from flask import redirect
 from flask import render_template
 from flask import request
 from xhtml.locale.template import LocaleTemplate
 
-from xiaoya_downloader.alist import AListAPI
 from xiaoya_downloader.download import Download
 from xiaoya_downloader.resources import Resources
 
 
-def init(resources: Resources, locale: LocaleTemplate, api: AListAPI) -> Flask:
+def init(resources: Resources, locale: LocaleTemplate, fs_api: FS) -> Flask:
     app: Flask = Flask(__name__)
 
     @app.route("/resources", defaults={"path": "/"}, methods=["GET"])
     @app.route("/resources/", defaults={"path": "/"}, methods=["GET"])
     @app.route("/resources/<path:path>", methods=["GET"])
     def resources_list(path: str):
-        response = api.fs.list(path)
-        if response.get("code") != 200:
-            return "Not Found", 404
+        data: List[Dict[str, Any]] = []
 
-        base = urljoin(api.base_url, path)
-        data: List[Dict[str, Any]] = response.get(
-            "data", {}).get("content", [])
-        for item in data:
-            if not item["is_dir"]:
-                if item["name"] in (node := resources[path]):
-                    if node[item["name"]].size != 0:
+        for obj in fs_api.list(path):
+            item: Dict[str, Any] = {
+                "name": obj["name"],
+                "size": obj["size"],
+                "is_dir": obj["is_dir"],
+                "modified": obj["modified"],
+            }
+
+            if not obj["is_dir"]:
+                if obj["name"] in (node := resources[path]):
+                    if node[obj["name"]].size != 0:
                         item["protected"] = True
                     item["selected"] = True
-        parent = join("resources", dirname(path) if path != "/" else "")
+
+            data.append(item)
 
         return render_template(
-            "resources.html", base=base, data=data, parent=parent,
+            "resources.html", base=urljoin(fs_api.base, path), data=data,
+            parent=join("resources", dirname(path) if path != "/" else ""),
             homepage="/resources", submit_mode="save",
             **locale.search(request.accept_languages.to_header(), "resources").fill()  # noqa:E501
         )
@@ -66,7 +70,6 @@ def init(resources: Resources, locale: LocaleTemplate, api: AListAPI) -> Flask:
 def run(base_url: str, base_dir: str, host: str = "0.0.0.0", port: int = 5000, debug: bool = True):  # noqa:E501
     resources: Resources = Resources.load(base_url, base_dir)
     locale: LocaleTemplate = LocaleTemplate(dirname(__file__))
-    api: AListAPI = AListAPI(base_url)
-    app = init(resources, locale, api)
-    Download.run(resources, api)
+    Download.run(resources, fs_api := FS(base_url))
+    app = init(resources, locale, fs_api)
     app.run(host=host, port=port, debug=debug)

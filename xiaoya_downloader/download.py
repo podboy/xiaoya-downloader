@@ -5,38 +5,41 @@ from threading import Thread
 from time import sleep
 from typing import List
 
+from alist_kits import FS
 from xkits_file import Downloader
+from xkits_logger import Logger
 
-from xiaoya_downloader.alist import AListAPI
 from xiaoya_downloader.resources import File
 from xiaoya_downloader.resources import Resources
 
 
 class Download():
 
-    def __init__(self, resources: Resources, api: AListAPI):
+    def __init__(self, resources: Resources, fs_api: FS):
         self.__resources: Resources = resources
-        self.__api: AListAPI = api
+        self.__fs_api: FS = fs_api
 
     @property
     def resources(self) -> Resources:
         return self.__resources
 
     @property
-    def api(self) -> AListAPI:
-        return self.__api
+    def fs_api(self) -> FS:
+        return self.__fs_api
 
     def join(self, file: File) -> str:
         return join(self.resources.base_dir, file.path, file.name)
 
     def download(self, file: File):
-        file.update(-1)
+        file.update(-(size := self.fs_api.get(join(file.path, file.name))["size"]))  # noqa:E501
         self.resources.save()
 
         if (downloader := Downloader(file.data, self.join(file))).start():
-            # size: int = self.api.fs.get(join(file.path, file.name))["data"]["size"]  # noqa:E501
-            file.update(downloader.stat.stat.st_size)
-            self.resources.save()
+            if (file_size := downloader.stat.stat.st_size) == size:
+                file.update(file_size)
+                self.resources.save()
+            else:
+                Logger.stderr_red(f"Failed to download {file.name}, expected size {size} != {file_size}")  # noqa:E501
 
     def daemon(self):
         delay: float = 15.0
@@ -65,5 +68,5 @@ class Download():
                 sleep(delay)
 
     @classmethod
-    def run(cls, resources: Resources, api: AListAPI):
-        Thread(target=cls(resources, api).daemon).start()
+    def run(cls, resources: Resources, fs_api: FS):
+        Thread(target=cls(resources, fs_api).daemon).start()

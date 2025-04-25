@@ -58,7 +58,9 @@ class Download():
         return True
 
     def execute(self, file: File) -> bool:
-        if file.size <= 0 or not exists(path := self.join(file)):
+        path: str = self.join(file)
+
+        if file.size <= 0 or not exists(path):
             try:
                 if not self.download(file):
                     return False

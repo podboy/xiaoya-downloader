@@ -1,5 +1,5 @@
-xkits-command>=0.2
-xkits-file>=0.3
+xkits-command>=0.3
+xkits-file>=0.4
 alist-kits>=0.2
 xhtm>=0.11
 requests

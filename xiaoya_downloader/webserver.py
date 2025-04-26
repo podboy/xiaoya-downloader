@@ -37,6 +37,7 @@ def init(resources: Resources, locale: LocaleTemplate, fs_api: FS) -> Flask:
 
             if not obj["is_dir"]:
                 item["href"] = urljoin(fs_api.base, join(path, obj["name"]))
+                item["target"] = "_blank"
                 item["optional"] = True
                 if obj["name"] in (node := resources[path]):
                     if node[obj["name"]].size != 0:
@@ -44,6 +45,7 @@ def init(resources: Resources, locale: LocaleTemplate, fs_api: FS) -> Flask:
                     item["selected"] = True
             else:
                 item["href"] = join("/resources", path.strip("/"), obj["name"])
+                item["target"] = "_self"
 
             data.append(item)
 

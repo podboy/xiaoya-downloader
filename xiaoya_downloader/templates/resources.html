@@ -199,7 +199,7 @@
                     {% else %}
                     <td></td>
                     {% endif %}
-                    <td><a href="{{ item.href }}" target="_blank">{{ item.name }}</a></td>
+                    <td><a href="{{ item.href }}" target="{{ item.target }}">{{ item.name }}</a></td>
                     <td class="file-size">{{ item.size }}</td>
                     <td>{{ item.modified }}</td>
                 </tr>

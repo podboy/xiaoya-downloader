@@ -1,5 +1,6 @@
 # coding:utf-8
 
+from os import remove
 from os.path import exists
 from os.path import isfile
 from os.path import join
@@ -51,6 +52,7 @@ class Download():
 
         if (actual_size := downloader.stat.stat.st_size) != expected_size:
             Logger.stdout_red(f"Path '{downloader.path}' expected size {expected_size} != {actual_size}")  # noqa:E501
+            remove(downloader.path)
             return False
 
         file.update(expected_size)

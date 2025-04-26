@@ -115,7 +115,7 @@
         }
 
         /* 搜索框样式 */
-        #search-box {
+        #search-input-box {
             padding: 5px;
             border: 1px solid #4CAF50; /* 修改边框颜色为按钮颜色 */
             border-radius: 4px;
@@ -128,7 +128,7 @@
         }
 
         /* 添加搜索框点击后的样式 */
-        #search-box:focus {
+        #search-input-box:focus {
             outline: none;
             border: 1px solid #45a049; /* 点击后的边框颜色与按钮悬停时的颜色一致 */
             box-shadow: 0 0 5px #45a049; /* 添加轻微的阴影效果 */
@@ -206,7 +206,8 @@
             {% endif %}
         </div>
         <div id="search-container">
-            <input type="text" id="search-box" placeholder="{{ search_placeholder }}">
+            <input type="text" id="search-input-box" placeholder="{{ search_placeholder }}">
+            <button id="search-button" class="button-style">{{ search_button }}</button>
         </div>
         <div id="selected-size">{{ selected_size }}: 0 / 0</div>
     </div>
@@ -371,6 +372,21 @@
                     handleSaveButtonClick("delete");
                 });
             }
+
+            // 添加搜索栏按钮的点击事件监听器
+            const searchButton = document.getElementById("search-button");
+            const searchInputBox = document.getElementById("search-input-box");
+
+            searchButton.addEventListener("click", function () {
+                const searchContent = searchInputBox.value.trim();
+                if (searchContent === "") {
+                    alert("{{ please_input_search }}");
+                    return;
+                }
+
+                // 直接重定向到 /search 页面，并将搜索内容作为查询参数
+                window.location.href = `/search/{{ homepage.strip('/') }}/?content=${encodeURIComponent(searchContent)}`;
+            });
 
         });
     </script>

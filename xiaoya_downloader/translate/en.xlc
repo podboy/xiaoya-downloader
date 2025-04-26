@@ -2,7 +2,7 @@ language = "en"
 
 [resources]
 language = "en"
-title = "Resources for xiaoya"
+title = "Download resources for xiaoya"
 name = "Name"
 size = "Size"
 modified = "Modified"

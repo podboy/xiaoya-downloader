@@ -176,17 +176,13 @@
             <tbody>
                 {% for item in data %}
                 <tr>
-                    {% if item.is_dir %}
-                    <td></td>
-                    <td><a href="{{ request.path.rstrip('/') }}/{{ item.name }}">{{ item.name }}</a></td>
-                    {% elif item.protected %}
-                    <td></td>
-                    <td><a href="{{ base.rstrip('/') }}/{{ item.name }}" target="_blank">{{ item.name }}</a></td>
-                    {% else %}
+                    {% if item.optional %}
                     <td><input type="checkbox" name="select" value="{{ item.name }}" data-size="{{ item.size }}" {% if
                             item.selected %}checked{% endif %}></td>
-                    <td><a href="{{ base.rstrip('/') }}/{{ item.name }}" target="_blank">{{ item.name }}</a></td>
+                    {% else %}
+                    <td></td>
                     {% endif %}
+                    <td><a href="{{ item.href }}" target="_blank">{{ item.name }}</a></td>
                     <td class="file-size">{{ item.size }}</td>
                     <td>{{ item.modified }}</td>
                 </tr>

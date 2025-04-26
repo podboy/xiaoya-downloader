@@ -32,20 +32,23 @@ def init(resources: Resources, locale: LocaleTemplate, fs_api: FS) -> Flask:
             item: Dict[str, Any] = {
                 "name": obj["name"],
                 "size": obj["size"],
-                "is_dir": obj["is_dir"],
                 "modified": obj["modified"],
             }
 
             if not obj["is_dir"]:
+                item["href"] = urljoin(fs_api.base, join(path, obj["name"]))
+                item["optional"] = True
                 if obj["name"] in (node := resources[path]):
                     if node[obj["name"]].size != 0:
-                        item["protected"] = True
+                        item["optional"] = False
                     item["selected"] = True
+            else:
+                item["href"] = join("/resources", path.strip("/"), obj["name"])
 
             data.append(item)
 
         return render_template(
-            "resources.html", base=urljoin(fs_api.base, path), data=data,
+            "resources.html", data=data,
             parent=join("resources", dirname(path) if path != "/" else ""),
             homepage="/resources", submit_mode="save",
             **locale.search(request.accept_languages.to_header(), "resources").fill()  # noqa:E501

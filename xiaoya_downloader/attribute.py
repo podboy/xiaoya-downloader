@@ -1,7 +1,7 @@
 # coding:utf-8
 
 __project__ = "xiaoya-downloader"
-__version__ = "0.12.1"
+__version__ = "0.12.2"
 __urlhome__ = "https://github.com/bondbox/xargproject/"
 __description__ = "Automatically created by xargproject."
 

@@ -134,6 +134,26 @@
             box-shadow: 0 0 5px #45a049; /* 添加轻微的阴影效果 */
         }
 
+        /* 过滤框容器 */
+        #search-filter {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            flex-grow: 1; /* 使过滤框容器占满剩余空间 */
+        }
+
+        /* 过滤框 */
+        #search-filter-box {
+            padding: 2px 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            height: 20px;
+            margin-left: 5px;
+            width: 80%; /* 使过滤框占满剩余空间 */
+        }
+
     </style>
 </head>
 
@@ -143,7 +163,12 @@
             <thead>
                 <tr>
                     <th><input type="checkbox" id="select-all"></th>
-                    <th id="name-header">{{ name }} ⤴️</th>
+                    <th id="name-header">
+                        <div id="search-filter">
+                            {{ name }} ⤴️
+                            <input type="text" id="search-filter-box" placeholder="{{ search_placeholder }}">
+                        </div>
+                    </th>
                     <th>{{ size }}</th>
                     <th>{{ modified }}</th>
                 </tr>
@@ -257,9 +282,28 @@
                 });
             });
 
-            // 添加点击事件监听器到 Name 表头
-            nameHeader.addEventListener("click", function () {
-                window.location.href = "/{{ parent }}";
+            // 将返回上一级事件绑定到 #name-header 的父容器
+            nameHeader.addEventListener("click", function (event) {
+                // 确保点击事件不是由搜索框触发的
+                if (!event.target.closest("#search-filter-box")) {
+                    window.location.href = "/{{ parent }}";
+                }
+            });
+
+            // 添加过滤功能到第二列表头
+            const searchFilterBox = document.getElementById("search-filter-box");
+            const tableRows = document.querySelectorAll("tbody tr");
+
+            searchFilterBox.addEventListener("input", function () {
+                const searchTerm = this.value.toLowerCase();
+                tableRows.forEach(row => {
+                    const itemName = row.querySelector("td:nth-child(2)").textContent.toLowerCase();
+                    if (itemName.includes(searchTerm)) {
+                        row.style.display = "";
+                    } else {
+                        row.style.display = "none";
+                    }
+                });
             });
 
             // （保存/删除）共用的按钮点击事件处理函数
@@ -327,22 +371,6 @@
                     handleSaveButtonClick("delete");
                 });
             }
-
-            // 添加搜索功能
-            const searchBox = document.getElementById("search-box");
-            const tableRows = document.querySelectorAll("tbody tr");
-
-            searchBox.addEventListener("input", function () {
-                const searchTerm = this.value.toLowerCase();
-                tableRows.forEach(row => {
-                    const itemName = row.querySelector("td:nth-child(2)").textContent.toLowerCase();
-                    if (itemName.includes(searchTerm)) {
-                        row.style.display = "";
-                    } else {
-                        row.style.display = "none";
-                    }
-                });
-            });
 
         });
     </script>

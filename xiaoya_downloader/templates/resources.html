@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ language }}">
 
 <head>
     <meta charset="UTF-8">
@@ -229,7 +229,7 @@
                 window.location.href = "/{{ parent }}";
             });
 
-            // 共用的按钮点击事件处理函数
+            // （保存/删除）共用的按钮点击事件处理函数
             function handleSaveButtonClick(submitType) {
                 const selectedItems = Array.from(checkboxes)
                     .filter(checkbox => checkbox.checked)

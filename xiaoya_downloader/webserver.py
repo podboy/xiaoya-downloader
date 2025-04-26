@@ -58,7 +58,7 @@ def init(resources: Resources, locale: LocaleTemplate, fs_api: FS) -> Flask:
         files = loads(request.form["selected_items"])
         resources.submit_node(path, files)
         resources.save()
-        return redirect(urljoin(request.url_root, f"resources/{path}"))
+        return redirect(f"/resources/{path}")
 
     @app.route("/", methods=["GET"])
     def index():

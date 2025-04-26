@@ -247,9 +247,13 @@
 
             // 更新所有文件大小显示
             fileSizeElements.forEach(element => {
-                const sizeInBytes = parseInt(element.textContent, 10);
-                element.textContent = formatFileSize(sizeInBytes);
-                totalSize += sizeInBytes; // 累加总大小
+                const row = element.closest("tr"); // 获取当前行
+                const checkbox = row.querySelector("input[name='select']"); // 查找复选框
+                if (checkbox) { // 如果当前行有复选框
+                    const sizeInBytes = parseInt(element.textContent, 10);
+                    element.textContent = formatFileSize(sizeInBytes);
+                    totalSize += sizeInBytes; // 累加总大小
+                }
             });
 
             // 初始化 selectedSize，遍历所有复选框，检查其 checked 状态

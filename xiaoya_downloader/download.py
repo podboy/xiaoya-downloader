@@ -80,6 +80,7 @@ class Download():
 
         if (stat := FileStat(path)).stat.st_size != file.size:
             Logger.stdout_red(f"Path '{path}' expected size {file.size} != {stat.stat.st_size}")  # noqa:E501
+            remove(path)
             return False
 
         return True

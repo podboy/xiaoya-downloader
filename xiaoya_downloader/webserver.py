@@ -22,6 +22,12 @@ from xiaoya_downloader.resources import Resources
 def init(resources: Resources, locale: LocaleTemplate, fs_api: FS) -> Flask:
     app: Flask = Flask(__name__)
 
+    @app.route("/search/resources/", methods=["GET"])
+    def resources_search():
+        keywords = request.args.get("keywords", "")
+        queryurl = f"search?box={keywords}&url=&type=video"
+        return redirect(urljoin(resources.base_url, queryurl))
+
     @app.route("/resources", defaults={"path": "/"}, methods=["GET"])
     @app.route("/resources/", defaults={"path": "/"}, methods=["GET"])
     @app.route("/resources/<path:path>", methods=["GET"])
@@ -50,7 +56,7 @@ def init(resources: Resources, locale: LocaleTemplate, fs_api: FS) -> Flask:
             data.append(item)
 
         return render_template(
-            "resources.html", data=data,
+            "resources.html", data=data, origin=resources.base_url,
             parent=join("resources", dirname(path) if path != "/" else ""),
             homepage="/resources", submit_mode="save",
             **locale.search(request.accept_languages.to_header(), "resources").fill()  # noqa:E501

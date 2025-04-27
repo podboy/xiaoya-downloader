@@ -401,8 +401,7 @@
                     return;
                 }
 
-                // 直接重定向到 /search 页面，并将搜索内容作为查询参数
-                window.location.href = `/search/{{ homepage.strip('/') }}/?keywords=${encodeURIComponent(searchContent)}`;
+                window.open(`/search/{{ homepage.strip('/') }}/?keywords=${encodeURIComponent(searchContent)}`, '_blank');
             });
 
         });

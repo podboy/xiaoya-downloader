@@ -39,8 +39,9 @@ class Download():
         downloader: Downloader = Downloader(file.data, self.join(file))
 
         if not exists(downloader.path):
-            file.update(-expected_size)
-            self.resources.save()
+            with self.resources.lock:
+                file.update(-expected_size)
+                self.resources.save()
 
             if not downloader.start():
                 Logger.stdout_red(f"Failed to download {join(file.path, file.name)}")  # noqa:E501
@@ -55,8 +56,9 @@ class Download():
             remove(downloader.path)
             return False
 
-        file.update(expected_size)
-        self.resources.save()
+        with self.resources.lock:
+            file.update(expected_size)
+            self.resources.save()
         return True
 
     def execute(self, file: File) -> bool:
@@ -90,14 +92,14 @@ class Download():
 
         while True:
             try:
-                with self.resources.lock:
-                    if len(self.resources.files) > 0:
+                if len(self.resources.files) > 0:
+                    with self.resources.lock:
                         file = self.resources.files.pop()
-                        if not self.execute(file):
-                            self.resources.files.append(file)
-                        delay = max(1.0, delay * 0.9)
-                    else:
-                        delay = min(delay * 1.1, 180.0)
+                    if not self.execute(file):
+                        self.resources.files.append(file)
+                    delay = max(1.0, delay * 0.9)
+                else:
+                    delay = min(delay * 1.1, 180.0)
             except Exception:  # pylint:disable=broad-exception-caught
                 import traceback  # pylint:disable=import-outside-toplevel
 

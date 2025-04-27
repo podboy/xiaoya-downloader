@@ -18,7 +18,7 @@ from xiaoya_downloader.webserver import run
 
 @CommandArgument(__project__, description=__description__)
 def add_cmd(_arg: ArgParser):  # pylint: disable=unused-argument
-    _arg.add_argument("--debug-mode", type=bool, default=(getenv("DEBUG_MODE", "false").lower() == "true"))  # noqa:E501
+    _arg.add_argument("--debug-mode", type=bool, default=getenv("DEBUG_MODE", "false").lower() == "true")  # noqa:E501
     _arg.add_argument("--base-url", type=str, default=getenv("BASE_URL", "https://alist.xiaoya.pro/"))  # noqa:E501
     _arg.add_argument("--base-dir", type=str, default=getenv("BASE_DIR", "data"))  # noqa:E501
     _arg.add_argument("--api-url", type=str, default=getenv("API_URL", ""))

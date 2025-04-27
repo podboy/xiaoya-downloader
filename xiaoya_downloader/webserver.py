@@ -40,7 +40,7 @@ def init(base_url: str, resources: Resources, locale: LocaleTemplate, fs_api: FS
                 "name": file.name,
                 "size": size if (size := file.size) > 0 else 0,
                 "modified": file.modified,
-                "optional": True if size >= 0 else False,
+                "optional": size >= 0,
                 "target": "_blank",
                 "href": urljoin(fs_api.base, join(path, file.name)),
             }
@@ -135,7 +135,8 @@ def init(base_url: str, resources: Resources, locale: LocaleTemplate, fs_api: FS
     return app
 
 
-def run(base_url: str, base_dir: str, api_url: str = "",
+def run(  # pylint:disable=too-many-arguments,too-many-positional-arguments
+        base_url: str, base_dir: str, api_url: str = "",
         host: str = "0.0.0.0", port: int = 5000, debug: bool = True):
     resources: Resources = Resources.load(api_url or base_url, base_dir)
     locale: LocaleTemplate = LocaleTemplate(dirname(__file__))

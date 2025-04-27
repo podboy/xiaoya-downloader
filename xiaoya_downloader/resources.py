@@ -147,7 +147,7 @@ class Node():
 
     @property
     def size(self) -> int:
-        return sum([file.size for file in self if file.size > 0])
+        return sum(file.size for file in self if file.size > 0)
 
     def reform(self):
         drop = [file.name for file in self if file.size == 0]
@@ -287,8 +287,9 @@ class Resources():
         if path in self:
             del self[path]
             return path not in self
-        elif (dir := dirname(path)) in self:
-            if not (node := self[dir]).remove(basename(path)):
+
+        if (parent := dirname(path)) in self:
+            if not (node := self[parent]).remove(basename(path)):
                 return False
             if len(node) == 0:
                 del self[node.path]

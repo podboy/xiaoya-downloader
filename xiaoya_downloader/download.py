@@ -96,7 +96,8 @@ class Download():
                     with self.resources.lock:
                         file = self.resources.files.pop(0)
                     if not self.execute(file):
-                        self.resources.files.append(file)
+                        with self.resources.lock:
+                            self.resources.files.append(file)
                     delay = max(1.0, delay * 0.9)
                 else:
                     delay = min(delay * 1.1, 180.0)

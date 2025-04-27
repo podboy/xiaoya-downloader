@@ -77,10 +77,11 @@ def init(base_url: str, resources: Resources, locale: LocaleTemplate, fs_api: FS
     @app.route("/download/<path:path>", methods=["POST"])
     def download_delete(path: str):
         items = loads(request.form["selected_items"])
-        for item in items:
-            target: str = join(path, item)
-            resources.remove(target)
-        resources.save()
+        with resources.lock:
+            for item in items:
+                target: str = join(path, item)
+                resources.remove(target)
+            resources.save()
         return redirect(f"/download/{path}")
 
     @app.route("/resources", defaults={"path": "/"}, methods=["GET"])
@@ -122,8 +123,9 @@ def init(base_url: str, resources: Resources, locale: LocaleTemplate, fs_api: FS
     @app.route("/resources/<path:path>", methods=["POST"])
     def resources_save(path: str):
         files = loads(request.form["selected_items"])
-        resources.submit_node(path, files)
-        resources.save()
+        with resources.lock:
+            resources.submit_node(path, files)
+            resources.save()
         return redirect(f"/resources/{path}")
 
     @app.route("/", methods=["GET"])

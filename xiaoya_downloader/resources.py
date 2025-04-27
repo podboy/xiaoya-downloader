@@ -12,6 +12,7 @@ from os.path import isdir
 from os.path import isfile
 from os.path import join
 from shutil import rmtree
+from threading import Lock
 from typing import Any
 from typing import Dict
 from typing import Iterable
@@ -31,6 +32,9 @@ class File():  # pylint:disable=too-many-instance-attributes
         self.__path: str = path
         self.__name: str = name
         self.__size: int = size
+
+    def __str__(self) -> str:
+        return f"File(path={self.path}, name={self.name}, size={self.size})"
 
     @property
     def dirty(self) -> bool:
@@ -219,11 +223,16 @@ class Resources():
     FILE: str = "resources.json"
 
     def __init__(self, base_url: str, base_dir: str, nodes: Iterable[str] = []):  # noqa:E501, pylint:disable=W0102
-        self.__nodes: Dict[str, Node] = {path: Node.load(
-            base_url, base_dir, path) for path in nodes}
+        self.__nodes: Dict[str, Node] = {}
+        self.__files: List[File] = []
+        for path in nodes:
+            node = Node.load(base_url, base_dir, path)
+            self.__nodes[path] = node
+            self.__files.extend(node)
         self.__base_url: str = base_url
         self.__base_dir: str = base_dir
         self.__dirty: bool = False
+        self.__lock: Lock = Lock()
 
     def __len__(self) -> int:
         return len(self.__nodes)
@@ -266,6 +275,14 @@ class Resources():
     def dirty(self) -> bool:
         return self.__dirty
 
+    @property
+    def lock(self) -> Lock:
+        return self.__lock
+
+    @property
+    def files(self) -> List[File]:
+        return self.__files
+
     def remove(self, path: str) -> bool:
         if path in self:
             del self[path]
@@ -296,6 +313,11 @@ class Resources():
             with open(config, "w", encoding="utf-8") as whdl:
                 whdl.write(dumps([node.path for node in self]))
                 self.__dirty = False
+
+        files: List[File] = []
+        for node in self:
+            files.extend(node)
+        self.__files = files
 
     @classmethod
     def load(cls, base_url: str, base_dir: str) -> "Resources":

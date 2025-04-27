@@ -90,10 +90,14 @@ class Download():
 
         while True:
             try:
-                for node in self.resources:
-                    for file in node:
-                        self.execute(file)
-                delay = max(5.0, delay * 0.9)
+                with self.resources.lock:
+                    if len(self.resources.files) > 0:
+                        file = self.resources.files.pop()
+                        if not self.execute(file):
+                            self.resources.files.append(file)
+                        delay = max(1.0, delay * 0.9)
+                    else:
+                        delay = min(delay * 1.1, 180.0)
             except Exception:  # pylint:disable=broad-exception-caught
                 import traceback  # pylint:disable=import-outside-toplevel
 

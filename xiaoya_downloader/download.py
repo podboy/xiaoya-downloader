@@ -98,7 +98,7 @@ class Download():
                     if not self.execute(file):
                         with self.resources.lock:
                             self.resources.files.append(file)
-                            delay = min(delay * 1.1, 180.0)
+                            delay = min(delay * 1.1, 30.0)
                     else:
                         delay = max(1.0, delay * 0.9)
                 else:
@@ -107,7 +107,7 @@ class Download():
                 import traceback  # pylint:disable=import-outside-toplevel
 
                 traceback.print_exc()
-                delay = min(delay * 1.5, 180.0)
+                delay = min(delay * 1.5, 60.0)
             finally:
                 sleep(delay)
 

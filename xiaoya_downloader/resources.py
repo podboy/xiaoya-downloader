@@ -141,6 +141,10 @@ class Node():
     def path(self) -> str:
         return self.__path
 
+    @property
+    def size(self) -> int:
+        return sum([file.size for file in self if file.size > 0])
+
     def reform(self):
         drop = [file.name for file in self if file.size == 0]
         for name in drop:

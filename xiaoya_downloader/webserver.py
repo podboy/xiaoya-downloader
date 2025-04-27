@@ -57,7 +57,7 @@ def init(base_url: str, resources: Resources, locale: LocaleTemplate, fs_api: FS
 
                 item: Dict[str, Any] = {
                     "name": node.path.lstrip(path).strip("/"),
-                    "size": 0,
+                    "size": node.size,
                     "optional": optional,
                     "target": "_self",
                     "href": join("/download", node.path)

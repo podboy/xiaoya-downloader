@@ -19,14 +19,14 @@ from xiaoya_downloader.download import Download
 from xiaoya_downloader.resources import Resources
 
 
-def init(resources: Resources, locale: LocaleTemplate, fs_api: FS) -> Flask:
+def init(base_url: str, resources: Resources, locale: LocaleTemplate, fs_api: FS) -> Flask:  # noqa:E501
     app: Flask = Flask(__name__)
 
     @app.route("/search/resources/", methods=["GET"])
     def resources_search():
         keywords = request.args.get("keywords", "")
         queryurl = f"search?box={keywords}&url=&type=video"
-        return redirect(urljoin(resources.base_url, queryurl))
+        return redirect(urljoin(base_url, queryurl))
 
     @app.route("/resources", defaults={"path": "/"}, methods=["GET"])
     @app.route("/resources/", defaults={"path": "/"}, methods=["GET"])
@@ -78,9 +78,10 @@ def init(resources: Resources, locale: LocaleTemplate, fs_api: FS) -> Flask:
     return app
 
 
-def run(base_url: str, base_dir: str, host: str = "0.0.0.0", port: int = 5000, debug: bool = True):  # noqa:E501
-    resources: Resources = Resources.load(base_url, base_dir)
+def run(base_url: str, base_dir: str, api_url: str = "",
+        host: str = "0.0.0.0", port: int = 5000, debug: bool = True):
+    resources: Resources = Resources.load(api_url or base_url, base_dir)
     locale: LocaleTemplate = LocaleTemplate(dirname(__file__))
-    Download.run(resources, fs_api := FS(base_url))
-    app = init(resources, locale, fs_api)
+    Download.run(resources, fs_api := FS(api_url or base_url))
+    app = init(base_url, resources, locale, fs_api)
     app.run(host=host, port=port, debug=debug)

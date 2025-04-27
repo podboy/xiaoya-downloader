@@ -5,6 +5,7 @@ from json import loads
 from os import makedirs
 from os import remove
 from os import scandir
+from os.path import basename
 from os.path import dirname
 from os.path import exists
 from os.path import isdir
@@ -68,6 +69,11 @@ class File():  # pylint:disable=too-many-instance-attributes
         self.__dirty = True
         self.__size = size
 
+    def remove(self, base_dir: str) -> bool:
+        if self.size >= 0 and exists(path := join(base_dir, self.path, self.name)) and isfile(path):  # noqa:E501
+            remove(path)
+        return not exists(path)
+
     @classmethod
     def timestamp(cls) -> str:
         from datetime import datetime  # pylint:disable=import-outside-toplevel
@@ -92,14 +98,15 @@ class File():  # pylint:disable=too-many-instance-attributes
 
 
 class Node():
-    def __init__(self, base: str, path: str):
+    def __init__(self, base_url: str, base_dir: str, path: str):
         self.__files: Dict[str, File] = {}
         self.__dirty: bool = False
-        self.__base: str = base
+        self.__base_url: str = base_url
+        self.__base_dir: str = base_dir
         self.__path: str = path
 
     def __str__(self) -> str:
-        return f"Node({urljoin(self.base, self.path)})"
+        return f"Node({urljoin(self.base_url, self.path)})"
 
     def __len__(self) -> int:
         return len(self.__files)
@@ -110,6 +117,11 @@ class Node():
     def __getitem__(self, name: str) -> File:
         return self.__files[name]
 
+    def __delitem__(self, name: str):
+        if name in self.__files and self.__files[name].remove(self.base_dir):
+            del self.__files[name]
+            self.__dirty = True
+
     def __contains__(self, name: str) -> bool:
         return name in self.__files
 
@@ -118,8 +130,12 @@ class Node():
         return self.__dirty or any(file.dirty for file in self)
 
     @property
-    def base(self) -> str:
-        return self.__base
+    def base_url(self) -> str:
+        return self.__base_url
+
+    @property
+    def base_dir(self) -> str:
+        return self.__base_dir
 
     @property
     def path(self) -> str:
@@ -133,9 +149,14 @@ class Node():
 
     def append(self, name: str):
         if name not in self.__files:
-            file: File = File(self.base, self.path, name)
+            file: File = File(self.base_url, self.path, name)
             self.__files.setdefault(name, file)
             self.__dirty = True
+
+    def remove(self, name: str) -> bool:
+        if name in self:
+            del self[name]
+        return name not in self
 
     def update(self, name: str, size: int):
         if (file := self.__files[name]).size != size:
@@ -173,13 +194,13 @@ class Node():
         return True
 
     def load_file(self, data: Dict[str, Any]):
-        if (file := File.load(self.base, self.path, data)).name not in self:
+        if (file := File.load(self.base_url, self.path, data)).name not in self:  # noqa:E501
             self.__files.setdefault(file.name, file)
 
     @classmethod
     def load(cls, base_url: str, base_dir: str, path: str) -> "Node":
         file = join(base_dir, f"{path}.json")
-        node = Node(base_url, path)
+        node = Node(base_url, base_dir, path)
 
         if exists(file) and isfile(file):
             with open(file, "r", encoding="utf-8") as rhdl:
@@ -208,14 +229,23 @@ class Resources():
 
     def __getitem__(self, path: str) -> Node:
         if (name := path.strip("/")) not in self.__nodes:
-            self.__nodes[name] = Node(self.base_url, name)
+            self.__nodes[name] = Node(self.base_url, self.base_dir, name)
             self.__dirty = True
         return self.__nodes[name]
 
     def __delitem__(self, path: str):
         if (name := path.strip("/")) in self.__nodes:
-            del self.__nodes[name]
-            self.__dirty = True
+            node = self.__nodes[name]
+            files = [item.name for item in node]
+            for file in files:
+                del node[file]
+
+            if len(node) == 0 and exists(path := join(node.base_dir, node.path)) and isdir(path) and not any(scandir(path)):  # noqa:E501
+                rmtree(path)
+
+            if not exists(path):
+                del self.__nodes[name]
+                self.__dirty = True
 
     def __contains__(self, path: str) -> bool:
         return path.strip("/") in self.__nodes
@@ -231,6 +261,17 @@ class Resources():
     @property
     def dirty(self) -> bool:
         return self.__dirty
+
+    def remove(self, path: str) -> bool:
+        if path in self:
+            del self[path]
+            return path not in self
+        elif (dir := dirname(path)) in self:
+            if not (node := self[dir]).remove(basename(path)):
+                return False
+            if len(node) == 0:
+                del self[node.path]
+        return True
 
     def dump(self) -> Dict[str, List[Dict[str, Any]]]:
         return {node.path: node.dump() for node in self.__nodes.values() if len(node) > 0}  # noqa:E501

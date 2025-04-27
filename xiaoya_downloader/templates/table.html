@@ -90,10 +90,6 @@
             flex: 1;
         }
 
-        #button-container button:hover {
-            background-color: #f0f0f0;
-        }
-
         /* 通用按钮样式 */
         .button-style {
             background-color: #4CAF50;
@@ -349,12 +345,12 @@
                         if (response.redirected) {
                             window.location.href = response.url;
                         } else {
-                            alert("{{ save_failure }}");
+                            alert("{{ submit_failure }}");
                         }
                     })
                     .catch(error => {
                         console.error("Error:", error);
-                        alert("{{ save_error }}");
+                        alert("{{ submit_error }}");
                     });
             }
 

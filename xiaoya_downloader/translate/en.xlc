@@ -1,6 +1,6 @@
 language = "en"
 
-[resources]
+[table]
 language = "en"
 title = "Download resources for xiaoya"
 name = "Name"
@@ -13,7 +13,7 @@ search_button = "Search"
 delete_button = "Delete"
 save_button = "Save"
 please_select = "Please select at least one file"
-save_success = "Successfully saved"
-save_failure = "Save failed"
-save_error = "An error occurred while saving"
+submit_success = "Successfully submitted"
+submit_failure = "Submit failed"
+submit_error = "An error occurred while submitting"
 please_input_search = "Please input search content"

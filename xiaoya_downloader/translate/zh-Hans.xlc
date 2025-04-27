@@ -1,6 +1,6 @@
 language = "zh-Hans"
 
-[resources]
+[table]
 language = "zh-Hans"
 title = "小雅资源下载"
 name = "名称"
@@ -13,7 +13,7 @@ search_button = "搜索"
 delete_button = "删除"
 save_button = "保存"
 please_select = "请选择一个文件"
-save_success = "保存成功"
-save_failure = "保存失败"
-save_error = "保存时出错"
+submit_success = "提交成功"
+submit_failure = "提交失败"
+submit_error = "提交时出错"
 please_input_search = "请输入搜索内容"

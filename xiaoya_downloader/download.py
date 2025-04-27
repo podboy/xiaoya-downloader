@@ -98,9 +98,11 @@ class Download():
                     if not self.execute(file):
                         with self.resources.lock:
                             self.resources.files.append(file)
-                    delay = max(1.0, delay * 0.9)
+                            delay = min(delay * 1.1, 180.0)
+                    else:
+                        delay = max(1.0, delay * 0.9)
                 else:
-                    delay = min(delay * 1.1, 180.0)
+                    delay = min(delay * 2.0, 180.0)
             except Exception:  # pylint:disable=broad-exception-caught
                 import traceback  # pylint:disable=import-outside-toplevel
 

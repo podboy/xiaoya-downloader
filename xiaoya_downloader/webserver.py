@@ -1,6 +1,7 @@
 # coding:utf-8
 
 from json import loads
+from os import environ
 from os.path import dirname
 from os.path import join
 from typing import Any
@@ -140,6 +141,10 @@ def run(  # pylint:disable=R0913,R0917
         host: str = "0.0.0.0", port: int = 5000, debug: bool = True):
     resources: Resources = Resources.load(api_url or base_url, base_dir)
     locale: LocaleTemplate = LocaleTemplate(dirname(__file__))
-    Download.run(resources, fs_api := FS(api_url or base_url))
+    fs_api: FS = FS(api_url or base_url)
+
+    if not debug or environ.get("WERKZEUG_RUN_MAIN") == "true":
+        Download.run(resources, fs_api)
+
     app = init(base_url, resources, locale, fs_api)
     app.run(host=host, port=port, debug=debug)

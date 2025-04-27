@@ -109,6 +109,7 @@ class Download():
                 traceback.print_exc()
                 delay = min(delay * 1.5, 60.0)
             finally:
+                Logger.stdout_yellow(f"Sleep {delay:.2f} seconds")
                 sleep(delay)
 
     @classmethod

@@ -245,9 +245,9 @@
             fileSizeElements.forEach(element => {
                 const row = element.closest("tr"); // 获取当前行
                 const checkbox = row.querySelector("input[name='select']"); // 查找复选框
+                const sizeInBytes = parseInt(element.textContent, 10);
+                element.textContent = formatFileSize(sizeInBytes);
                 if (checkbox) { // 如果当前行有复选框
-                    const sizeInBytes = parseInt(element.textContent, 10);
-                    element.textContent = formatFileSize(sizeInBytes);
                     totalSize += sizeInBytes; // 累加总大小
                 }
             });

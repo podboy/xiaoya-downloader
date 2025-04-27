@@ -88,7 +88,7 @@ class Download():
         return True
 
     def daemon(self):
-        delay: float = 15.0
+        delay: float = 5.0
 
         while True:
             try:
@@ -98,9 +98,9 @@ class Download():
                     if not self.execute(file):
                         with self.resources.lock:
                             self.resources.files.append(file)
-                            delay = min(delay * 1.1, 30.0)
+                            delay = min(delay * 1.2, 30.0)
                     else:
-                        delay = max(1.0, delay * 0.9)
+                        delay = max(0.01, delay * 0.8)
                 else:
                     delay = min(delay * 2.0, 180.0)
             except Exception:  # pylint:disable=broad-exception-caught

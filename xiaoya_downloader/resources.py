@@ -317,7 +317,7 @@ class Resources():
 
         files: List[File] = []
         for node in self:
-            files.extend(node)
+            files.extend(file for file in node if file.size <= 0)
         self.__files = files
 
     @classmethod

@@ -103,6 +103,8 @@ class Download():
                         delay = max(0.01, delay * 0.8)
                 else:
                     delay = min(delay * 2.0, 180.0)
+            except (KeyboardInterrupt, SystemExit):
+                break
             except Exception:  # pylint:disable=broad-exception-caught
                 import traceback  # pylint:disable=import-outside-toplevel
 
@@ -114,4 +116,4 @@ class Download():
 
     @classmethod
     def run(cls, resources: Resources, fs_api: FS):
-        Thread(target=cls(resources, fs_api).daemon).start()
+        Thread(target=cls(resources, fs_api).daemon, daemon=True).start()

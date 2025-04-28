@@ -92,12 +92,12 @@ class Download():
 
         while True:
             try:
-                if len(self.resources.files) > 0:
+                if len(self.resources.tasks) > 0:
                     with self.resources.lock:
-                        file = self.resources.files.pop(0)
+                        file = self.resources.tasks.pop(0)
                     if not self.execute(file):
                         with self.resources.lock:
-                            self.resources.files.append(file)
+                            self.resources.tasks.append(file)
                             delay = min(delay * 1.2, 30.0)
                     else:
                         delay = max(0.01, delay * 0.8)

@@ -224,11 +224,11 @@ class Resources():
 
     def __init__(self, base_url: str, base_dir: str, nodes: Iterable[str] = []):  # noqa:E501, pylint:disable=W0102
         self.__nodes: Dict[str, Node] = {}
-        self.__files: List[File] = []
+        self.__tasks: List[File] = []
         for path in nodes:
             node = Node.load(base_url, base_dir, path)
             self.__nodes[path] = node
-            self.__files.extend(node)
+            self.__tasks.extend(node)
         self.__base_url: str = base_url
         self.__base_dir: str = base_dir
         self.__dirty: bool = False
@@ -280,8 +280,8 @@ class Resources():
         return self.__lock
 
     @property
-    def files(self) -> List[File]:
-        return self.__files
+    def tasks(self) -> List[File]:
+        return self.__tasks
 
     def remove(self, path: str) -> bool:
         if path in self:
@@ -318,7 +318,7 @@ class Resources():
         files: List[File] = []
         for node in self:
             files.extend(file for file in node if file.size <= 0)
-        self.__files = files
+        self.__tasks = files
 
     @classmethod
     def load(cls, base_url: str, base_dir: str) -> "Resources":

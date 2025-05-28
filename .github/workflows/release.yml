@@ -46,7 +46,6 @@ jobs:
           echo "Tag Name: $TAG_NAME"
           echo "Version: $VERSION"
           echo "PKG_VERSION=$VERSION" >> $GITHUB_ENV
-          sleep 60
       - name: Check Out Repo
         uses: actions/checkout@v2
       - name: Docker meta
